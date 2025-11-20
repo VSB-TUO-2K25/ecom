@@ -1,35 +1,54 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import 'bootstrap/dist/css/bootstrap.css';
 import './App.css'
+import { Route, Routes } from 'react-router';
+import Home from './Pages/Home';
+import Header from './Components/Header';
+import { createContext, useState } from 'react';
+import { useEffect } from 'react';
+import axios from 'axios';
+
+
+export const MyContext = createContext();
 
 function App() {
-  const [count, setCount] = useState(0)
+  
+  const [countryList, setCountryList] = useState([]);
+  const [selectedCountry, setselectedCountry] = useState('');
+
+  useEffect(() =>{
+    getCountry("https://countriesnow.space/api/v0.1/countries/");
+  },[])
+
+  const getCountry = async (url) => {
+    const response = await axios.get(url).then((res) =>{
+    console.log(res.data.data);
+    setCountryList(res.data.data)
+    })
+    
+    
+  };
+
+  const values ={
+    countryList,
+    setCountryList,
+    selectedCountry,
+    setselectedCountry,
+  }
+
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+   <>
+   <MyContext.Provider value={values}>
+    <Header/>
+   <Routes>
+    
+    <Route path='/' element={<Home/>}/>
+    
+   </Routes>
+   </MyContext.Provider>
+   </>
   )
 }
 
 export default App
+ 
